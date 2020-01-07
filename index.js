@@ -5,37 +5,60 @@ let stripes = document.getElementsByTagName('main')[0].children;
 let star, point;
 let counter = 0;
 let enemy;
-
 const enemojis = ['💩', '🍔', '🦄', '🐼', '🤖', '🥁', '💾', '🧹', '🧬'];
 
 let currentExpression, previousExpression;
 
-previousExpression = "?";
+let gameOverState = false;
+let gameStarted = false;
+let animationFrame, enemyAnimation;
+let touchEvent = 'ontouchstart' in window ? 'touchstart' : 'click';
 
 window.onload = async() => {
-    // load face detection and face expression recognition models
     await changeFaceDetector(TINY_FACE_DETECTOR)
     await faceapi.loadFaceExpressionModel('/')
     changeInputSize(224)
-
-    const stream = await navigator.mediaDevices.getUserMedia({ video: {} })
-    videoEl = document.getElementById('inputVideo');
-    videoEl.srcObject = stream
 }
 
-document.body.onclick = async () => {
-    animateText();
-    detectFacialExpression();
-    startGame();
+document.body.addEventListener(touchEvent, async() => {
+    if(!gameStarted && !gameOverState){
+        const stream = await navigator.mediaDevices.getUserMedia({ video: {} })
+        videoEl = document.getElementById('inputVideo');
+        videoEl.srcObject = stream;
+        removeText();
+        startCountdown();
+        detectFacialExpression();
+    } else if(gameStarted && gameOverState){
+        gameOverState = false;
+        gameStarted = true;
+        point.classList.remove('over');
+        removeText();
+        detectFacialExpression();
+        startGame();
+        emoji.style.display = "block";
+        showNeutralFace();
+    }
+})
+
+const startCountdown = () => {
+    let counter = 3;
+    var timeinterval = setInterval(function(){
+        point.innerHTML = counter;
+        counter--;
+        if(counter<0){
+          startGame();
+          gameStarted = true;
+          clearInterval(timeinterval);
+        }
+      },1000);
 }
 
-const animateText = () => {
+const removeText = () => {
     const title = document.getElementsByTagName('h1')[0];
-    const subtitle = document.getElementsByTagName('p')[1];
+    const subtitle = document.getElementsByClassName('start')[0];
     point = document.getElementsByClassName('point')[0];
-
-    title.style.display = 'none';
-    subtitle.style.display = 'none';
+    title.style.display = "none";
+    subtitle.style.display = "none";
     point.style.display = 'block';
 }
 
@@ -46,13 +69,6 @@ const moveEmojiUp = () => {
         currentStripe -= 1;
         stripes[currentStripe].append(emoji);
     }    
-    if(collisionWithStar()){
-        addPoint();
-    }
-
-    if(collisionWithEnemy()){
-        removePoint();
-    } 
 }
 
 const moveEmojiDown = () => {
@@ -61,15 +77,10 @@ const moveEmojiDown = () => {
     if(currentStripe < 6){
         currentStripe += 1;
         stripes[currentStripe].append(emoji);
-    }   
-    if(collisionWithStar()){
-        addPoint();
-    } 
-
-    if(collisionWithEnemy()){
-        removePoint();
-    } 
+    }    
 }
+
+const showNeutralFace = () => emoji.innerHTML = '😐';
 
 const generateStar = () => {
     star = document.createElement('p');
@@ -79,25 +90,46 @@ const generateStar = () => {
     positionStar();
 }
 
-const getRandomIndex = (items) => {
-    return Math.floor(Math.random() * Math.floor(items.length - 1));
+const getRandomIndex = (items) => Math.floor(Math.random() * Math.floor(items.length - 1));
+
+const isSafari = () => {
+    let chromeAgent = navigator.userAgent.indexOf("Chrome") > -1; 
+    let safariAgent = navigator.userAgent.indexOf("Safari") > -1; 
+
+    if(safariAgent && !chromeAgent){
+        return true
+    }
+    return false;
 }
 
 const generateEnemies = () => {
-    // place 1 emoji and animate
     enemy = document.createElement('p');
     enemy.classList.add('enemy');
     enemy.innerHTML = enemojis[getRandomIndex(enemojis)];
 
-    const enemyAnimation = enemy.animate([
-        {transform: `translate(-${window.innerWidth / 2 + 50}px, 0)`},
-        {transform: `translate(${window.innerWidth + 50}px, 0)`}
-    ], 10000);
+    if(isSafari()){
+        // web animations API polyfill
+        enemyAnimation = enemy.animate({
+            transform: [`translate(-${window.innerWidth / 2 + 50}px, 0)`, `translate(${window.innerWidth + 50}px, 0)`],
+            }, {
+            duration: 8000,
+        });
+        enemyAnimation.onfinish = () => {
+            removeEnemy();
+            generateEnemies();
+        };
 
-    enemyAnimation.onfinish = () => {
-        removeEnemy();
-        generateEnemies();
-    };
+    } else {
+        enemyAnimation = enemy.animate([
+            {transform: `translate(-${window.innerWidth / 2 + 50}px, 0)`},
+            {transform: `translate(${window.innerWidth + 50}px, 0)`}
+        ], 8000);
+    
+        enemyAnimation.onfinish = () => {
+            removeEnemy();
+            generateEnemies();
+        };
+    }
 
     positionEnemy();
 }
@@ -105,11 +137,9 @@ const generateEnemies = () => {
 const positionEnemy = () => {
     let randomIndex = getRandomIndex(stripes);
 
-    if(stripes[randomIndex].children.length === 0){
-        stripes[randomIndex].append(enemy);   
-    } else {
+    !stripes[randomIndex].contains(star) ?
+        stripes[randomIndex].append(enemy) : 
         positionEnemy();
-    }
 }
 
 const removeStar = () => {
@@ -120,9 +150,11 @@ const removeStar = () => {
 }
 
 const removeEnemy = () => {
-    let enemy = document.getElementsByClassName('enemy')[0];
-    if(enemy){
-        enemy.parentNode.removeChild(enemy);
+    let enemies = document.getElementsByClassName('enemy');
+    if(enemies){
+        for(let i = 0; i < enemies.length; i++){
+            enemies[i].parentElement.removeChild(enemies[i])
+        }
     }
 }
 
@@ -155,7 +187,7 @@ const collisionWithEnemy = () => {
 
     const parent = emoji.parentElement;
 
-    if(parent.children.length > 1 && parent.children[0] === enemy){     
+    if(parent.contains(enemy)){     
         if(collisionFromLeft || collisionFromRight){
             removeEnemy();
             return true;
@@ -166,6 +198,7 @@ const collisionWithEnemy = () => {
 }
 
 const startGame = () => {
+    point.innerHTML = '0';
     generateStar();
     generateEnemies();
 }
@@ -182,22 +215,30 @@ const removePoint = () => {
         point.innerHTML = counter;
         positionStar();
     } else {
-        point.innerHTML = "GAME OVER";
         gameOver();
     }
 }
 
-const gameOver = () => {
+const hideEmoji = () => emoji.style.display = "none";
 
+const gameOver = () => {
+    point.innerHTML = "GAME OVER";
+    point.classList.add('over');
+    window.cancelAnimationFrame(animationFrame);
+
+    gameOverState = true;
+    enemyAnimation.cancel();
+    removeEnemy();
+    removeStar();
+    hideEmoji();
+
+    document.getElementsByClassName('start')[0].style.display = 'block';
 }
 
 const detectFacialExpression = async () => {
-    if(videoEl.paused || videoEl.ended || !isFaceDetectionModelLoaded()){
-        window.requestAnimationFrame(detectFacialExpression)
-    }
+    animationFrame = window.requestAnimationFrame(detectFacialExpression)
 
     const options = getFaceDetectorOptions();
-
     const result = await faceapi.detectSingleFace(videoEl, options).withFaceExpressions()
 
     if (result) {
@@ -210,7 +251,7 @@ const detectFacialExpression = async () => {
       }
     }
 
-    if(currentExpression !== previousExpression){
+    if(!gameOverState && gameStarted && currentExpression !== previousExpression){
         switch(currentExpression){
             case 'surprised':
                 moveEmojiUp();
@@ -219,10 +260,20 @@ const detectFacialExpression = async () => {
                 moveEmojiDown();
                 break;
             default:
+                showNeutralFace();
                 break;
         }
     }
-    previousExpression = currentExpression;
 
-    window.requestAnimationFrame(detectFacialExpression)
+    if(gameStarted){
+        if(collisionWithStar()){
+            addPoint();
+        }
+    
+        if(collisionWithEnemy()){
+            removePoint();
+        } 
+    }
+
+    previousExpression = currentExpression;
 }

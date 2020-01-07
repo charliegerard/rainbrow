@@ -1,14 +1,23 @@
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta name="description" content="Rainbrow clone game">
+    <meta name="theme-color" content="#f2f5f5" />
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-title" content="Weather PWA">
+    <link rel="apple-touch-icon" href="/icons/launcher-icon-144.png">
     <title>Rainbrow</title>
-    <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
-    <script src="libs/face-api.js"></script>
-    <script src="libs/faceDetectionControls.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/js/materialize.min.js"></script>
+    <script async type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script async src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/js/materialize.min.js"></script>
+    <script async src="libs/face-api.min.js"></script>
+    <script async src="libs/faceDetectionControls.js"></script>
+    <script defer src="https://rawgit.com/web-animations/web-animations-js/master/web-animations.min.js"></script>
 
+    <link rel="manifest" href="manifest.json">
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -20,12 +29,22 @@
         <div class="yellow"></div>
         <div class="green"><p class="emoji">😲</p></div>
         <div class="lightblue"></div>
-        <div class="darkblue"><p>TAP ANYWHERE TO START</p></div>
+        <div class="darkblue"><p class="start">TAP ANYWHERE TO START</p></div>
         <div class="purple"></div>
     </main>
 
-    <p class="point">0</p>
+    <p class="point"></p>
 
-    <script src="index.js"></script>
+    <script defer src="index.js"></script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/service-worker.js')
+                    .then((reg) => {
+                        console.log('Service worker registered.', reg);
+                    });
+            });
+        }
+    </script>
 </body>
 </html>

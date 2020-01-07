@@ -1,8 +1,6 @@
 const SSD_MOBILENETV1 = 'ssd_mobilenetv1'
 const TINY_FACE_DETECTOR = 'tiny_face_detector'
-
-
-let selectedFaceDetector = SSD_MOBILENETV1
+let selectedFaceDetector = TINY_FACE_DETECTOR
 
 // ssd_mobilenetv1 options
 let minConfidence = 0.5
