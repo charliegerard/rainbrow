@@ -22,6 +22,10 @@ The original iOS game works with detecting the brows but the face-api framework 
 * Looking surprised <-> Move up
 * Neutral <-> Stay in place
 
+## Demo
+
+![Demo](demo.gif)
+
 
 ## Status
 

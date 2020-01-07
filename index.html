@@ -11,7 +11,7 @@
     <meta name="apple-mobile-web-app-title" content="Weather PWA">
     <link rel="apple-touch-icon" href="/icons/launcher-icon-144.png">
     <title>Rainbrow</title>
-    <script async type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
     <script async src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/js/materialize.min.js"></script>
     <script async src="libs/face-api.min.js"></script>
     <script async src="libs/faceDetectionControls.js"></script>
@@ -37,6 +37,12 @@
 
     <script defer src="index.js"></script>
     <script>
+        console.log('%c%s',
+            'color: purple; background: white; font-size: 14px;','Made by Charlie Gerard - https://twitter.com/devdevcharlie')
+        console.log('%c%s',
+            'color: purple; background: white; font-size: 14px;','Repo here 👉 https://github.com/charliegerard/rainbrow')
+
+        
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('/service-worker.js')
