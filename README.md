@@ -2,7 +2,7 @@
 
 Quick clone of the [iOS game Rainbrow](https://apps.apple.com/au/app/rainbrow/id1312458558) by [Nathan Gitter](http://nathangitter.com/) using web technologies.
 
-![Snapshot of home screen on mobile](mobile.png)
+![Snapshot of home screen on mobile and dekstop](in-situ.png)
 
 ## Tech stack
 
