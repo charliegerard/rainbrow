@@ -4,6 +4,10 @@ Quick clone of the [iOS game Rainbrow](https://apps.apple.com/au/app/rainbrow/id
 
 ![Snapshot of home screen on mobile and dekstop](in-situ.png)
 
+
+Use facial expressions to move the emojis up and down, collect points with the stars and avoid the enemies.
+
+
 ## Tech stack
 
 * HTML
@@ -19,19 +23,23 @@ The original iOS game works with detecting the brows but the face-api framework 
 * Neutral <-> Stay in place
 
 
-## Tested on
+## Status
 
-Desktop:
+| Desktop | Status |
+| --- | --- |
+| Chrome 79 | ✅ |
+| Firefox 71 |  ✅ |
+| Safari 12.1.1 |  ✅ |
+| IE |  ❓ |
+| Edge |  ❓ |
 
-- Chrome 79
-- Firefox 71
-- Safari 12.1.1
 
-Mobile:
-
-- Chrome 79 on Android 10
-- Safari 13 on iPad
-
+| Mobile | Status |
+| --- | --- |
+| Chrome 79 on Android 10 | ✅ |
+| Safari 13 on iPad |  ✅ |
+| Firefox for Android |  ❓ |
+| Samsung Internet |  ❓ |
 
 
 
