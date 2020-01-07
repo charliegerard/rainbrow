@@ -18,16 +18,16 @@ window.onload = async() => {
     await changeFaceDetector(TINY_FACE_DETECTOR)
     await faceapi.loadFaceExpressionModel('/')
     changeInputSize(224)
+    const stream = await navigator.mediaDevices.getUserMedia({ video: {} })
+    videoEl = document.getElementById('inputVideo');
+    videoEl.srcObject = stream;
+    detectFacialExpression();
 }
 
-document.body.addEventListener(touchEvent, async() => {
+document.getElementsByTagName('main')[0].addEventListener(touchEvent, async() => {
     if(!gameStarted && !gameOverState){
-        const stream = await navigator.mediaDevices.getUserMedia({ video: {} })
-        videoEl = document.getElementById('inputVideo');
-        videoEl.srcObject = stream;
-        removeText();
         startCountdown();
-        detectFacialExpression();
+        gameStarted = true;
     } else if(gameStarted && gameOverState){
         gameOverState = false;
         gameStarted = true;
@@ -42,15 +42,17 @@ document.body.addEventListener(touchEvent, async() => {
 
 const startCountdown = () => {
     let counter = 3;
+    removeText();
     var timeinterval = setInterval(function(){
         point.innerHTML = counter;
+        
         counter--;
         if(counter<0){
           startGame();
           gameStarted = true;
           clearInterval(timeinterval);
         }
-      },1000);
+      },800);
 }
 
 const removeText = () => {
