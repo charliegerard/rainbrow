@@ -179,6 +179,8 @@ const collisionWithStar = () => {
 }
 
 const collisionWithEnemy = () => {
+    
+    if(!enemy || !emoji) return false;
     const emojiLeft = emoji.getBoundingClientRect().left;
     const emojiRight = emoji.getBoundingClientRect().right;
     const enemyLeft = enemy.getBoundingClientRect().left;
